@@ -1,0 +1,50 @@
+body{
+  font-family: sans-serif;
+  background: #f9f4f4;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+.input-area {
+  margin-bottom: 20px;
+  border: none;
+}
+.delete-area {
+  margin-bottom: 20px;
+  border: none;
+}
+.completed-area {
+  margin-bottom: 20px;
+  border: none;
+}
+.Ongoing-area {
+  margin-bottom: 20px;
+  border: none;
+}
+button {
+  margin-left: 10px;
+  padding: 8px 16px;
+  font-size: 16px;
+  cursor: pointer;
+  background: #333;
+  color: #37d78c;
+  border: 1px solid rgb(22, 237, 155);
+  border-radius: 10px;
+}
+input[type="text"],
+input[type="number"],
+input[type="time"],
+input[type="email"] {
+  padding: 10px;              /* space inside */
+  margin: 5px;                /* space outside */
+  border: 1px solid #ccc;     /* light border */
+  border-radius: 6px;         /* rounded corners */
+  font-size: 14px;
+  width: 200px;               /* fixed width */
+  box-sizing: border-box;     /* includes padding in width */
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  border: none;
+}
