@@ -1,10 +1,14 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import Clock from './clock'
+
 type Todo = {
   id: number
-  text: string
+  title: string
   completed: boolean
   CreatedAt: string
-  Timeframe: string
+  timeframe: number
 }
 
 export default function TodoApp() {
@@ -13,7 +17,22 @@ export default function TodoApp() {
   const [time, setTime] = useState("")
   const [todos, setTodos] = useState<Todo[]>([])
   const [completedTodos, setCompletedTodos] = useState<Todo[]>([])
-  function addtodo() {
+
+  const openPopup = () => {
+    // Open a new browser window/tab (depending on browser settings)
+    const popupWindow = window.open(
+      `${window.location.origin}/popup`,    // URL to your popup route
+      "MyPopup",                             // window name
+      "width=600,height=400,top=125,left=350" // features: size & position
+    );
+    if (!popupWindow) {
+      alert("Popup blocked. Please allow popups for this site.");
+    }
+  };
+
+
+  async function addtodo() {
+    console.log("Add button clicked with:", add, time)
     if (time.trim() === "" || Number(time) <= 0)
     {
       alert("Please set a valid deadline")
@@ -24,21 +43,24 @@ export default function TodoApp() {
       alert("Task cannot be empty or a number")
       return
     }
-    const newTodo: Todo = {
-      id: Date.now(),
-      text: add,
-      completed: false,
-      CreatedAt: new Date().toLocaleString("en-IN", { timeZone: "Asia/Kolkata" }),
-      Timeframe: time
+    const res = await axios.post("http://localhost:5000/api/todos", {
+      title: add,         // from input
+      timeframe: Number(time)  // from input
+    });
+    const newTodo: Todo = res.data;
+    // const newTodo: Todo = {
+    //   id: Date.now(),
+    //   text: add,
+    //   completed: false,
+    //   CreatedAt: new Date().toLocaleString("en-IN", { timeZone: "Asia/Kolkata" }),
+    //   Timeframe: time
       
-    }
+    // }
     setTodos([...todos, newTodo])
     setAdd("")
     setTime("")
-  }
-  function Toedit(index: number) {
     
-      }
+  }
   function deletetodo(index: number) {
     if (isNaN(index) || index < 1 || index > todos.length) {
       alert("Please enter a valid task number to delete.");
@@ -47,7 +69,7 @@ export default function TodoApp() {
     setTodos(todos.filter((task, i) => {
       if(i===index-1) {
         
-        alert(`Deleted: ${task.text}`)
+        alert(`Deleted: ${task.title}`)
         setDel("")
         setTime("")
         return false
@@ -62,8 +84,10 @@ export default function TodoApp() {
     setTodos(todos.filter((_, i) => i !== index))  
     }
   return (
+
     <div className="todo-app">
       <h1>Todo List</h1>
+      <Clock />
       <div className="input-area">
         <input type="text" value={add} onChange={(e) => setAdd(e.target.value)} placeholder="Add a new task" onKeyDown={(e) => {
         if (e.key === "Enter") {
@@ -75,7 +99,7 @@ export default function TodoApp() {
           min="1"
           value={time}
           onChange={(e) => setTime(e.target.value)}
-          placeholder="set deadline"
+          placeholder="set deadline in hrs"
           onKeyDown={(e) => {
             if (e.key === "Enter") {
               addtodo();
@@ -102,7 +126,7 @@ export default function TodoApp() {
         <ul>
           {completedTodos.map((todo, index) => (
             <li key={todo.id}>
-              {index + 1}. {todo.text} 
+              {index + 1}. {todo.title} 
             </li>
           ))}
         </ul>
@@ -112,10 +136,10 @@ export default function TodoApp() {
         <ul>
           {todos.map((todo, index) => (
             <li key={todo.id}>
-              {index + 1}. {todo.text}
+              {index + 1}. {todo.title} &nbsp;&nbsp;&nbsp; (Deadline: {todo.timeframe} hrs) &nbsp;&nbsp;
               <button onClick={()=>{
-                window.open("/popup", "_blank", "width=600,height=400,align=center,top=100,left=300");
-                Toedit(Number(index))}}>edit time</button>
+                openPopup()
+                }}>edit time</button>
               <button onClick={() => completelist(Number(index))}>completed</button>
             </li>
           ))}
